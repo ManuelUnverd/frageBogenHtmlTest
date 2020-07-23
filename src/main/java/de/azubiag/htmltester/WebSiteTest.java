@@ -29,6 +29,7 @@ public class WebSiteTest {
 	Properties properties = new Properties();
 	WebDriver driver;
 	int anzahlReferenten;
+	String linkFragebogen;
 
 	private class RadioButton {
 		String id;
@@ -40,8 +41,8 @@ public class WebSiteTest {
 		String kommentar;
 	}
 
-	public WebSiteTest(String testdaten) throws IOException {
-
+	public WebSiteTest(String testdaten, String linkFragebogen) throws IOException {
+		this.linkFragebogen = linkFragebogen;
 		System.setProperty("webdriver.chrome.driver", "/home/chrx/chromedriver");
 		InputStream input = new FileInputStream(testdaten);
 		properties.load(input);
@@ -50,7 +51,7 @@ public class WebSiteTest {
 	}
 
 	public void testen() {
-		driver.get("https://gfigithubaccess.github.io/fragebogen/john_paul_jones/fragebogen_john_paul_jones");
+		driver.get(linkFragebogen);
 
 		massnahmenVerlaufPunkt_1();
 		massnahmenBetreuungPunkt_2();
