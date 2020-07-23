@@ -1,0 +1,35 @@
+#Tue Jul 21 14:09:53 CEST 2020
+radioButton1_1=1
+radioButton1_2=1
+textArea_1 = Das ist ein Test
+
+radioButton2_1=4
+textArea_2 = Das ist ein Test
+
+textArea_3 = Das ist ein Test
+
+anzahlReferenten=2
+
+0_r0 =5
+0_r1 =5
+0_r2=5
+0_r3 =5
+0_r4 =5
+
+0_text = Hallo
+
+
+1_r0 =1
+1_r1 =1
+1_r2=1
+1_r3 =1
+1_r4 =1
+1_text = Hallo
+
+
+
+
+
+
+
+
