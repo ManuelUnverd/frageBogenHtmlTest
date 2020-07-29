@@ -108,7 +108,7 @@ public class WebSiteTest {
 		referentenKommentarEinlesen();
 
 		refAntwortTextEingeben();
-		refAntwortRadioButtonsDrücken();
+		refAntwortRadioButtonsDrÃ¼cken();
 		driver.findElement(By.id("OKButton")).click();
 		System.out.println(kopierenVomClipboard());
 		driver.quit();
