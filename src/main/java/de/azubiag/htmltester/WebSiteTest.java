@@ -10,10 +10,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 /**
  * Webdriver von https://chromedriver.chromium.org/downloads runterladen und bei
@@ -30,7 +29,24 @@ public class WebSiteTest {
 	WebDriver driver;
 	int anzahlReferenten;
 	String linkFragebogen;
+	String[] fragenAnReferenten = { "Wie war ihr/sein Unterricht vorbereitet ? ",
+			"Wie umfangreich war ihr/sein Fachwissen ? ", "Wie ging sie/er auf spezielle thematische Probleme ein ? ",
+			"Wie verständlich sie/er die Inhalte vermitteln ? ",
+			"Wie sagte Ihnen ihr/sein Verhalten gegenüber den Seminarteilnehmern zu ?" };
+	
+	String [] massnamenverlauf = {"1.1 Wie empfinden Sie die Organisation der MaÃŸnahme ? ",
+			"1.2 Wie zufrieden sind Sie mit dem MaÃŸnahmenverlauf ?" };
 
+	
+	
+	private class Referent {
+		ArrayList<RadioButton> radioButtons = new ArrayList<>();
+		String kommentar;
+		String id;
+		}
+				
+							
+							
 	private class RadioButton {
 		String id;
 		String geklickterButton;
@@ -40,18 +56,49 @@ public class WebSiteTest {
 		String id;
 		String kommentar;
 	}
+	
+	
+	public  void createReportText() {
+		
+	}
 
 	public WebSiteTest(String testdaten, String linkFragebogen) throws IOException {
 		this.linkFragebogen = linkFragebogen;
-		System.setProperty("webdriver.chrome.driver", "/home/chrx/chromedriver");
+		System.setProperty("webdriver.chrome.driver", "C:\\manuel.homeoffice\\chromedriver.exe");
 		InputStream input = new FileInputStream(testdaten);
 		properties.load(input);
-		anzahlReferenten = Integer.parseInt(properties.getProperty("anzahlReferenten"));
+
 		driver = new ChromeDriver();
+	}
+
+	public void erzeugeTestDatenRadioButton() {
+		int anzahlRadioButtonGruppen = 5;
+		String aufBauRadioButtonGruppeId;
+		String radioButtonGruppeId;
+
+		// Radio buttons einlesen
+		// Schleife die durch alle Referenten durchgeht
+		for (int i = 0; i < anzahlReferenten; i++) {
+			aufBauRadioButtonGruppeId = "_r";
+			aufBauRadioButtonGruppeId = Integer.toString(i) + aufBauRadioButtonGruppeId;
+			// innere Schleife für alle Radiobuttongruppen eines Referenten
+			for (int j = 0; j < anzahlRadioButtonGruppen; j++) {
+				radioButtonGruppeId = "";
+				radioButtonGruppeId = aufBauRadioButtonGruppeId + Integer.toString(j);
+				RadioButton temp = new RadioButton();
+				temp.id = radioButtonGruppeId;
+				temp.geklickterButton = Integer.toString((int) (Math.random() * 5) + 1);
+				radioButtonCollection.add(temp);
+
+			}
+		}
+
 	}
 
 	public void testen() {
 		driver.get(linkFragebogen);
+		WebElement body = driver.findElement(By.tagName("body"));
+		anzahlReferenten = Integer.parseInt(body.getAttribute("anzahlreferenten"));
 
 		massnahmenVerlaufPunkt_1();
 		massnahmenBetreuungPunkt_2();
@@ -61,7 +108,7 @@ public class WebSiteTest {
 		referentenKommentarEinlesen();
 
 		refAntwortTextEingeben();
-		refAntwortRadioButtonsDrücken();
+		refAntwortRadioButtonsDr�cken();
 		driver.findElement(By.id("OKButton")).click();
 		System.out.println(kopierenVomClipboard());
 		driver.quit();
