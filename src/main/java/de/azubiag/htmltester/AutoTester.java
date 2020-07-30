@@ -25,6 +25,21 @@ public class AutoTester {
 	String kommentarZuBetreung_Punkt2="bbbbbbbbb";
 	String kommentarZuReferentenAllgemein_Punkt3="cccccccc";
 	
+	String umfrageid;
+	String startdatum;
+	String enddatum;
+	String massnameid;
+	String seminarleitername;
+	
+	String []  antwortFeld_1;
+	String []	 antwortFeld_2;
+	String  antwortFeld_3;
+	
+	File file;
+	FileWriter fileWriter;
+	
+	ArrayList<String> clipBoardAntwortString;
+	
 	/**
 	 * Webdriver von https://chromedriver.chromium.org/downloads runterladen und bei pfadChromedriver
 	 * den Pfad angeben
@@ -38,9 +53,10 @@ public class AutoTester {
 		
 		System.setProperty("webdriver.chrome.driver", pfadChromedriver);
 		this.link = htmlLink;
-		File file = new File(ausgabeDatei);
-		FileWriter fileWriter = new FileWriter(file, true);
-		printWriter = new PrintWriter(fileWriter);
+		file = new File(ausgabeDatei);
+		 fileWriter = new FileWriter(file, true);
+		clipBoardAntwortString = new ArrayList<>();
+		printWriter = new PrintWriter(System.out,true);
 
 	}
 
@@ -59,49 +75,26 @@ public class AutoTester {
 
 	public void start(int anzahlFragebogen) throws IOException {
 
-		ArrayList<String> clipBoardAntwortString = new ArrayList<>();
+		 clipBoardAntwortString = new ArrayList<>();
 
 		for (int i = 0; i < anzahlFragebogen; i++) {
-			printWriter.println("Teilnehmer" + i);
-			clipBoardAntwortString.add(fragebogenAusfuellen());
+			fragebogenAusfuellen();
+			printWriter = new PrintWriter(fileWriter,true);
+			printFragebogen();
+			printWriter = new PrintWriter(System.out, true);
+			printFragebogen();
 		}
+		
+		printWriter = new PrintWriter(fileWriter,true);
+		printAlleAntwortStrings();
+		printWriter = new PrintWriter(System.out,true);
+		printAlleAntwortStrings();
+		openEditor();
 
-		printWriter.println("Alle Antwort Strings");
-		for (String s : clipBoardAntwortString) {
-			printWriter.println(s);
-		}
-		printWriter.close();
-
+		
 	}
-
-	private String fragebogenAusfuellen() {
-		String umfrageid;
-		String startdatum;
-		String enddatum;
-		String massnameid;
-		String seminarleitername;
-		referentenListe = new ArrayList<>();
-		driver = new ChromeDriver();
-		driver.get(link);
-		WebElement body = driver.findElement(By.tagName("body"));
-		anzahlReferenten = Integer.parseInt(body.getAttribute("anzahlreferenten"));
-		umfrageid = body.getAttribute("umfrageid");
-		startdatum = driver.findElement(By.id("startdatum")).getText();
-		enddatum = driver.findElement(By.id("enddatum")).getText();
-		massnameid = driver.findElement(By.id("startdatum")).getText();
-		seminarleitername = driver.findElement(By.id("seminarleitername")).getText();
-
-		for (int i = 0; i < anzahlReferenten; i++) {
-			referentenListe.add(makeReferent(i));
-		}
-
-		String[] antwortFeld_1 = massnahmenVerlaufPunkt_1();
-		String[] antwortFeld_2 = massnahmenBetreuungPunkt_2();
-		String antwortFeld_3 = bewertungReferentenPunkt_3();
-		gebeReferentenDatenEin();
-		driver.findElement(By.id("OKButton")).click();
-		driver.quit();
-
+	
+	private void  printFragebogen() {
 		printWriter.println("Von Html-Seite " + link);
 		printWriter.println("startdatum " + startdatum);
 		printWriter.println("enddatum " + enddatum);
@@ -152,8 +145,48 @@ public class AutoTester {
 		printWriter.println(copyClipboard);
 		printWriter.println();
 		printWriter.println("~~~~~~~~~~~~~~~~~~");
+		
+		
+		printWriter.flush();
 
-		return copyClipboard;
+		
+	}
+	private void printAlleAntwortStrings() {
+		printWriter.println("Alle Antwort Strings");
+		for (String s : clipBoardAntwortString) {
+			printWriter.println(s);
+		}
+		printWriter.close();
+	}
+
+	private void fragebogenAusfuellen() {
+		
+		referentenListe = new ArrayList<>();
+		driver = new ChromeDriver();
+		driver.get(link);
+		WebElement body = driver.findElement(By.tagName("body"));
+		anzahlReferenten = Integer.parseInt(body.getAttribute("anzahlreferenten"));
+		umfrageid = body.getAttribute("umfrageid");
+		startdatum = driver.findElement(By.id("startdatum")).getText();
+		enddatum = driver.findElement(By.id("enddatum")).getText();
+		massnameid = driver.findElement(By.id("startdatum")).getText();
+		seminarleitername = driver.findElement(By.id("seminarleitername")).getText();
+
+		for (int i = 0; i < anzahlReferenten; i++) {
+			referentenListe.add(makeReferent(i));
+		}
+
+		 antwortFeld_1 = massnahmenVerlaufPunkt_1();
+		 antwortFeld_2 = massnahmenBetreuungPunkt_2();
+		 antwortFeld_3 = bewertungReferentenPunkt_3();
+		gebeReferentenDatenEin();
+		driver.findElement(By.id("OKButton")).click();
+		clipBoardAntwortString.add(kopierenVomClipboard());
+		driver.quit();
+
+		
+
+		
 
 	}
 
@@ -241,4 +274,12 @@ public class AutoTester {
 
 	}
 
+	private void openEditor () {
+		try {
+			java.awt.Desktop.getDesktop().edit(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
